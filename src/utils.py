@@ -3,6 +3,10 @@ import sys
 import dill
 import pickle
 
+from src.exception import CustomException
+from src.logger import logging
+
+from sklearn.metrics import r2_score
 
 def save_object(file_path, obj):
     try:
