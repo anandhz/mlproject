@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multiple Predictions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='multiplepred.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.2/cdn/css/ionicons.min.css">
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="home-icon-link">
+            <img src="{{ url_for('static', filename='home.png') }}" alt="Home Icon">
+        </a>        
+        <h1>Upload CSV for Multiple Predictions</h1>
+        <form action="{{ url_for('multiparameter')}}" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file">
+            <button type="submit">Predict</button>
+        </form>        
+        {% if results1 %}
+        <h2>Predictions</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>gender</th>
+                        <th>race_ethnicity</th>
+                        <th>parental_level_of_education</th>
+                        <th>lunch</th>
+                        <th>test_preparation_course</th>
+                        <th>reading_score</th>
+                        <th>writing_score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for results in results1 %}
+                    <tr>
+                        <td>{{ results.gender }}</td>
+                        <td>{{ results.race_ethnicity }}</td>
+                        <td>{{ results.parental_level_of_education }}</td>
+                        <td>{{ results.lunch }}</td>
+                        <td>{{ results.test_preparation_course }}</td>
+                        <td>{{ results.reading_score }}</td>
+                        <td>{{ results.writing_score }}</td>
+                {% endfor %}                
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,1 +1,35 @@
-<h1>Welcome to the home page</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Exam Performance Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Prediction Using Reggression Models</h1>
+        </div>
+        <div class="description">
+            <p>In this comprehensive machine learning project, the focus is on constructing an end-to-end model that encompasses a variety of regression models for evaluating input data.
+                Development process includes fine-tuning hyperparameters to optimize model performance. 
+                Through systematic training, a hyperparameter-tuned model is generated, and a crucial step involves selecting the most effective model based on performance scores. 
+                Selection criterion prioritizes the model with the highest score, ensuring that it is employed for subsequent predictions. 
+                Meticulous approach not only emphasizes accuracy but also seeks to align the model's predictive capabilities closely with human-calculated outcomes.
+                By leveraging a diverse set of regression models and employing rigorous hyperparameter tuning, the goal is to create a robust machine learning solution capable of delivering predictions that are not only precise but also closely align with calculated outcomes.</p>
+            
+        </div>
+        <div class="growth-description">
+            <h2>Exploring Model Prediction</h2>
+            <p>Single-Row Prediction : Where users to interact directly with the model by supplying a single row of data, and the model processes this information to generate an output. The emphasis is on simplicity and user engagement, allowing individuals to experience the predictive capabilities of the model firsthand. This approach is particularly valuable in scenarios where users seek on-the-fly predictions for individual instances, promoting a more interactive and user-friendly machine learning experience</p>
+            <p>Batch Predictions :  where users can upload data in Excel or CSV format, and the machine learning model processes multiple rows to generate predictions. The result is presented in a comprehensive output table, including the predicted column. This approach streamlines the prediction process for larger datasets, fostering a user-friendly environment for individuals looking to leverage machine learning for multiple instances simultaneously.</p>
+        </div>
+
+        <!-- Menu -->
+        <div class="menu">
+            <button class="menu-button" onclick="location.href='/singleparameter2';">Single Prediction</button>
+            <button class="menu-button" onclick="location.href='/multipleprediction';">Multiple Prediction</button>
+        </div>
+    </div>
+</body>
+
+</html>
