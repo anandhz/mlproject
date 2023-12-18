@@ -1,8 +1,9 @@
-from flask import Flask,request,render_template
+from flask import Flask,request,render_template,flash,redirect
 import numpy as np
 import pandas as pd
 import os
 import sys
+import secrets
 
 from sklearn.preprocessing import StandardScaler
 from src.pipeline.predict_pipeline import CustomData,PredictPipeline
@@ -10,6 +11,7 @@ from src.utils import load_object
 from src.exception import CustomException
 
 app=Flask(__name__)
+app.secret_key = secrets.token_hex(16)
 
 
 ## Route for a home page
@@ -52,65 +54,77 @@ def multiparameter():
     try:
         if request.method == 'GET':
             return render_template('multiplepred.html')
-
         else:
+            # Check if a file was uploaded
+            if 'file' not in request.files:
+                flash('No file part')
+                return redirect(request.url)
+
             # Get the uploaded CSV file
             uploaded_file = request.files['file']
-            
-            if uploaded_file.filename != '':
-                # Read the CSV file into a DataFrame
-                csv_data = pd.read_csv(uploaded_file)
-                
-                # Initialize an empty list to store CustomData instances
-                data_list = []
-                
-                # Iterate over the rows of the DataFrame
-                for index, row in csv_data.iterrows():
 
-                    gender=row['gender']
-                    race_ethnicity=row['race_ethnicity']
-                    parental_level_of_education=row['parental_level_of_education']
-                    lunch=row['lunch']
-                    test_preparation_course=row['test_preparation_course']
-                    reading_score=int(row['writing_score'])
-                    writing_score=int(row['reading_score'])
+            if uploaded_file.filename == '':
+                flash('No selected file')
+                return redirect(request.url)
 
-                    data = CustomData(
-                        gender=gender,
-                        race_ethnicity=race_ethnicity,
-                        parental_level_of_education=parental_level_of_education,
-                        lunch=lunch,
-                        test_preparation_course=test_preparation_course,
-                        reading_score=reading_score,
-                        writing_score=writing_score
-                    )
-                    data_list.append(data)
+            # Read the CSV file into a DataFrame
+            csv_data = pd.read_csv(uploaded_file)
 
-                # Convert the list of CustomData instances to a DataFrame
-                pred_df = pd.concat([data.get_data_as_data_frame() for data in data_list], ignore_index=True)
+            # Check for correct columns in CSV
+            expected_columns = ['gender', 'race_ethnicity', 'parental_level_of_education', 'lunch', 'test_preparation_course', 'reading_score', 'writing_score']
+            if not all(col in csv_data.columns for col in expected_columns):
+                flash("The CSV file does not have the expected columns.")
+                return redirect(request.url)
 
-                print(pred_df)
-                print("Before Prediction")
+            # Initialize an empty list to store CustomData instances
+            data_list = []
 
-                model_path=os.path.join("artifacts","model.pkl")
-                preprocessor_path=os.path.join('artifacts','preprocessor.pkl')
-                preprocessor=load_object(file_path=preprocessor_path)
-                model=load_object(file_path=model_path)
+            # Iterate over the rows of the DataFrame
+            for index, row in csv_data.iterrows():
+                gender = row['gender']
+                race_ethnicity = row['race_ethnicity']
+                parental_level_of_education = row['parental_level_of_education']
+                lunch = row['lunch']
+                test_preparation_course = row['test_preparation_course']
+                reading_score = int(row['writing_score'])
+                writing_score = int(row['reading_score'])
 
-                pred_df=preprocessor.transform(pred_df)
-                results1 = model.predict(pred_df)
-                print("After Prediction")
-                final_data_path=os.path.join("artifacts","predicted_data.csv")
-                results1.to_csv(final_data_path, index=False)
+                data = CustomData(
+                    gender=gender,
+                    race_ethnicity=race_ethnicity,
+                    parental_level_of_education=parental_level_of_education,
+                    lunch=lunch,
+                    test_preparation_course=test_preparation_course,
+                    reading_score=reading_score,
+                    writing_score=writing_score
+                )
+                data_list.append(data)
 
-                return render_template("multiplepred.html", results1=results1)
-   
-            else:
-                # Handle the case where no file is uploaded
-                return render_template('multiplepred.html', error='No file uploaded')
+            # Convert the list of CustomData instances to a DataFrame
+            pred_df = pd.concat([data.get_data_as_data_frame() for data in data_list], ignore_index=True)
+
+            # Perform the prediction
+            predict_pipeline = PredictPipeline()
+            final_pred_df = predict_pipeline.multipredict(pred_df)
+
+            if final_pred_df is None:
+                raise ValueError("The 'final_pred_df' is None after prediction.")
+
+            # Save the predicted data to a CSV file
+            final_data_path = os.path.join("artifacts", "predicted_data.csv")
+            final_pred_df.to_csv(final_data_path, index=False)
+
+            with open('/artifacts/predicted_data.csv', 'r') as file:
+                csv_reader = csv.reader(file)
+                header = next(csv_reader)  # Get the header
+
+                data = list(csv_reader)  # Get the data
+
+            return render_template('index.html', header=header, data=data)
 
     except Exception as e:
-                raise CustomException(e,sys)
+        flash(f"An error occurred: {str(e)}")
+        return redirect(request.url)
 
 if __name__=="__main__":
     app.run(host="0.0.0.0",debug=True)

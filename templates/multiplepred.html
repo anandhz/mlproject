@@ -3,7 +3,6 @@
 <head>
     <title>Multiple Predictions</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='multiplepred.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.2/cdn/css/ionicons.min.css">
 </head>
 <body>
     <div class="container">
@@ -15,36 +14,30 @@
             <input type="file" name="file">
             <button type="submit">Predict</button>
         </form>        
-        {% if results1 %}
-        <h2>Predictions</h2>
         <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>gender</th>
-                        <th>race_ethnicity</th>
-                        <th>parental_level_of_education</th>
-                        <th>lunch</th>
-                        <th>test_preparation_course</th>
-                        <th>reading_score</th>
-                        <th>writing_score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for results in results1 %}
-                    <tr>
-                        <td>{{ results.gender }}</td>
-                        <td>{{ results.race_ethnicity }}</td>
-                        <td>{{ results.parental_level_of_education }}</td>
-                        <td>{{ results.lunch }}</td>
-                        <td>{{ results.test_preparation_course }}</td>
-                        <td>{{ results.reading_score }}</td>
-                        <td>{{ results.writing_score }}</td>
-                {% endfor %}                
-                </tbody>
-            </table>
+            {% if final_pred_df %}
+            <h2>Predictions</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            {% for column in header %}
+                                <th>{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in final_pred_df.itertuples() %}
+                        <tr>
+                            {% for value in row %}
+                                <td>{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
-    </div>
 </body>
 </html>
