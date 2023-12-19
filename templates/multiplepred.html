@@ -18,7 +18,7 @@
         {% if header and data %}
             <h2>Predictions</h2>
             <div class="table-container">
-                <table>
+                <table id="predictionTable">
                     <thead>
                         <tr>
                             {% for col in header %}
@@ -37,6 +37,39 @@
                     </tbody>
                 </table>
             </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // Get the table element
+                    var table = document.getElementById('predictionTable');
+            
+                    if (table) {
+                        // Get all rows in the table body
+                        var rows = table.querySelector('tbody').getElementsByTagName('tr');
+            
+                        // Define the column index to check (assuming it's the first column, adjust as needed)
+                        var columnIndex = 8;
+            
+                        // Loop through each row and check the value in the specified column
+                        for (var i = 0; i < rows.length; i++) {
+                            var cell = rows[i].getElementsByTagName('td')[columnIndex];
+            
+                            if (cell) {
+                                var cellValue = parseFloat(cell.textContent);
+            
+                                // Check if the value is less than 40
+                                if (!isNaN(cellValue) && cellValue < 40) {
+                                    // Highlight the row by adding a CSS class
+                                    rows[i].classList.add('highlighted');
+                                }
+                            } else {
+                                console.error('Cell not found in row ', i);
+                            }
+                        }
+                    } else {
+                        console.error('Table with id "predictionTable" not found.');
+                    }
+                });
+            </script>
         {% endif %}
     </div>
 </body>
