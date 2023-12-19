@@ -24,31 +24,35 @@ def index():
 
 @app.route("/singleparameter2",methods=['GET','POST'])
 def singleparameter():
-    if request.method=='GET':
-        return render_template('singleparam.html')
+    try:
+        if request.method=='GET':
+            return render_template('singleparam.html')
 
-    else:
-        data = CustomData(
-            gender=request.form.get('gender'),
-            race_ethnicity=request.form.get('ethnicity'),
-            parental_level_of_education=request.form.get('parental_level_of_education'),
-            lunch=request.form.get('lunch'),
-            test_preparation_course=request.form.get('test_preparation_course'),
-            reading_score=float(request.form.get('writing_score')),
-            writing_score=float(request.form.get('reading_score'))
-        )
+        else:
+            data = CustomData(
+                gender=request.form.get('gender'),
+                race_ethnicity=request.form.get('ethnicity'),
+                parental_level_of_education=request.form.get('parental_level_of_education'),
+                lunch=request.form.get('lunch'),
+                test_preparation_course=request.form.get('test_preparation_course'),
+                reading_score=float(request.form.get('writing_score')),
+                writing_score=float(request.form.get('reading_score'))
+            )
 
-        pred_df=data.get_data_as_data_frame()
-        print(pred_df)
-        print("Before Prediction")
+            pred_df=data.get_data_as_data_frame()
+            print(pred_df)
+            print("Before Prediction")
 
-        predict_pipeline=PredictPipeline()
-        print("Mid Prediction")
-        results=predict_pipeline.predict(pred_df)[0]
-        print("after Prediction")
+            predict_pipeline=PredictPipeline()
+            print("Mid Prediction")
+            results=predict_pipeline.predict(pred_df)[0]
+            print("after Prediction")
 
-           
-    return render_template("singleparam.html",results=results)
+            
+        return render_template("singleparam.html",results=results)
+
+    except Exception as e:
+            raise CustomException(e,sys) 
 
 
 @app.route("/multipleprediction",methods=['GET','POST'])
@@ -130,4 +134,4 @@ def multiparameter():
             raise CustomException(e,sys) 
 
 if __name__=="__main__":
-    app.run(host="0.0.0.0",debug=True)
+    app.run(host="0.0.0.0")
