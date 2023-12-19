@@ -4,6 +4,7 @@ import pandas as pd
 import os
 import sys
 import secrets
+import csv
 
 from sklearn.preprocessing import StandardScaler
 from src.pipeline.predict_pipeline import CustomData,PredictPipeline
@@ -12,6 +13,7 @@ from src.exception import CustomException
 
 app=Flask(__name__)
 app.secret_key = secrets.token_hex(16)
+app.config['UPLOAD_FOLDER'] = 'uploads'
 
 
 ## Route for a home page
@@ -114,17 +116,18 @@ def multiparameter():
             final_data_path = os.path.join("artifacts", "predicted_data.csv")
             final_pred_df.to_csv(final_data_path, index=False)
 
-            with open('/artifacts/predicted_data.csv', 'r') as file:
+            file_path = 'artifacts\predicted_data.csv'
+            print(f"Attempting to open file: {file_path}")
+
+            with open(file_path, 'r') as file:
                 csv_reader = csv.reader(file)
                 header = next(csv_reader)  # Get the header
-
                 data = list(csv_reader)  # Get the data
 
-            return render_template('index.html', header=header, data=data)
+            return render_template('multiplepred.html', header=header, data=data)
 
     except Exception as e:
-        flash(f"An error occurred: {str(e)}")
-        return redirect(request.url)
+            raise CustomException(e,sys) 
 
 if __name__=="__main__":
     app.run(host="0.0.0.0",debug=True)

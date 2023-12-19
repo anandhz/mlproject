@@ -13,31 +13,31 @@
         <form action="{{ url_for('multiparameter')}}" method="POST" enctype="multipart/form-data">
             <input type="file" name="file">
             <button type="submit">Predict</button>
-        </form>        
-        <div class="table-container">
-            {% if final_pred_df %}
+        </form>
+        
+        {% if header and data %}
             <h2>Predictions</h2>
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
-                            {% for column in header %}
-                                <th>{{ column }}</th>
+                            {% for col in header %}
+                                <th>{{ col }}</th>
                             {% endfor %}
                         </tr>
                     </thead>
                     <tbody>
-                    {% for row in final_pred_df.itertuples() %}
-                        <tr>
-                            {% for value in row %}
-                                <td>{{ value }}</td>
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
+                        {% for row in data %}
+                            <tr>
+                                {% for value in row %}
+                                    <td>{{ value }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}                
                     </tbody>
                 </table>
             </div>
-            {% endif %}
-        </div>
+        {% endif %}
+    </div>
 </body>
 </html>
